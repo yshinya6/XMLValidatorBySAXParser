@@ -4,31 +4,43 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
-import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.XMLReader;
 
 public class Main {
 	public final static void main(String args[]) throws ParserConfigurationException,
 			FileNotFoundException {
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setValidating(true);
-		DocumentBuilder builder;
-		builder = factory.newDocumentBuilder();
+		try {
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser parser = factory.newSAXParser();
+		XMLReader xmlReader = parser.getXMLReader();
+			try {
+				xmlReader
+						.setFeature("http://xml.org/sax/features/validation", true);
+			} catch (SAXNotRecognizedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (SAXNotSupportedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		long startTime = 0;
 		long endTime = 0;
 
 		InputStream is;
 
-		Document doc;
 		try {
-			for (int i = 0; i < 21; i++) {
+			for (int i = 0; i < 10; i++) {
 				is = new FileInputStream(args[0]);
 				startTime = System.currentTimeMillis();
-				doc = builder.parse(is);
+				xmlReader.parse(new InputSource(is));
 				endTime = System.currentTimeMillis();
 				System.out.println(endTime - startTime + "[ms]");
 				is.close();
@@ -42,5 +54,8 @@ public class Main {
 		}
 		System.out.println("VALID XML FILE");
 		System.exit(0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
